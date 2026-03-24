@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>La Surferia</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body>
+
+<!-- ============ BACKGROUND ============ -->
+<div class="bg-ocean">
+  <div class="stars"></div>
+  <svg class="wave-svg" viewBox="0 0 1440 200" xmlns="http://www.w3.org/2000/svg">
+    <path fill="white" d="M0,100 C360,160 720,40 1080,100 C1260,130 1380,110 1440,100 L1440,200 L0,200 Z"/>
+    <path fill="white" d="M1440,100 C1080,160 720,40 360,100 C180,130 60,110 0,100 L0,200 L1440,200 Z"/>
+  </svg>
+  <svg class="wave-svg" viewBox="0 0 1440 200" xmlns="http://www.w3.org/2000/svg">
+    <path fill="white" d="M0,80 C480,160 960,20 1440,80 L1440,200 L0,200 Z"/>
+  </svg>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header>
+  <div class="header-inner">
+    <span class="logo" onclick="navigate('home')">🌊 La Surferia</span>
+    <nav>
+      <a id="nav-home"   onclick="navigate('home')"   class="active">Inicio</a>
+      <a id="nav-tienda" onclick="navigate('tienda')">Tienda</a>
+      <a id="nav-admin"  onclick="navigate('admin')">Admin</a>
+    </nav>
+    <div>
+      <button class="cart-btn" onclick="toggleCart()">
+        🛒 Carrito
+        <span class="cart-count" id="cart-count">0</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- ============ TOASTS ============ -->
+<div class="toast-container" id="toasts"></div>
+
+<!-- ============ CART OVERLAY ============ -->
+<div class="cart-overlay" id="cart-overlay" onclick="closeCartOutside(event)">
+  <div class="cart-panel">
+    <div class="cart-title">
+      Mi Carrito
+      <button class="close-cart" onclick="toggleCart()">✕</button>
+    </div>
+    <div id="cart-items"></div>
+    <div id="cart-summary"></div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: HOME
+     ============================================================ -->
+<div class="page active" id="page-home">
+
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-tag">Aloha desde el océano</div>
+      <h1 class="hero-title">
+        Tu tienda de<br><em>surf</em><br>favorita
+      </h1>
+      <p class="hero-sub">
+        Desde las olas de Hawaii hasta la costa bonaerense.
+        Todo lo que necesitás para vivir el mar.
+      </p>
+      <button class="hero-cta" onclick="navigate('tienda')">
+        Ver colección <span class="arrow">→</span>
+      </button>
+    </div>
+    <div class="hero-deco">🏄</div>
+  </section>
+
+  <div class="cats-bar">
+    <div class="cats-bar-inner">
+      <span class="cat-label">Categorías:</span>
+      <button class="cat-pill" onclick="navigate('tienda','Tabla de Surf')">🏄 Tablas de Surf</button>
+      <button class="cat-pill" onclick="navigate('tienda','Traje de Neoprene')">🤿 Trajes de Neoprene</button>
+      <button class="cat-pill" onclick="navigate('tienda','Accesorios')">🎒 Accesorios</button>
+      <button class="cat-pill" onclick="navigate('tienda','Ropa')">👕 Ropa</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- ============================================================
+     PAGE: TIENDA
+     ============================================================ -->
+<div class="page" id="page-tienda">
+  <div class="section">
+    <div class="section-inner">
+
+      <div class="section-header">
+        <h2 class="section-title">Tienda</h2>
+        <p class="section-sub">GET /api/productos</p>
+      </div>
+
+      <div class="filter-bar">
+        <button class="cat-pill all active" data-cat="" onclick="filterProducts('')">Todos</button>
+        <button class="cat-pill" data-cat="Tabla de Surf"     onclick="filterProducts('Tabla de Surf')">🏄 Tablas</button>
+        <button class="cat-pill" data-cat="Traje de Neoprene" onclick="filterProducts('Traje de Neoprene')">🤿 Neoprene</button>
+        <button class="cat-pill" data-cat="Accesorios"        onclick="filterProducts('Accesorios')">🎒 Accesorios</button>
+        <button class="cat-pill" data-cat="Ropa"              onclick="filterProducts('Ropa')">👕 Ropa</button>
+      </div>
+
+      <div class="products-grid" id="products-grid"></div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================
+     PAGE: ADMIN
+     ============================================================ -->
+<div class="page" id="page-admin">
+  <div class="section">
+    <div class="section-inner">
+
+      <div class="section-header">
+        <h2 class="section-title">Panel de Administración</h2>
+        <p class="section-sub">Endpoints · Middlewares · Controladores</p>
+      </div>
+
+      <!-- POST /api/productos -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="endpoint-badge badge-post">POST</span>
+          <span class="endpoint-path">/api/productos</span>
+          <span class="panel-title">Agregar producto</span>
+        </div>
+        <div class="panel-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">Nombre *</label>
+              <input class="form-input" id="f-nombre" placeholder="Ej: Tabla Shortboard 6'2&quot;" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Categoría *</label>
+              <select class="form-select" id="f-categoria">
+                <option value="">— seleccionar —</option>
+                <option>Tabla de Surf</option>
+                <option>Traje de Neoprene</option>
+                <option>Accesorios</option>
+                <option>Ropa</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Precio (ARS) *</label>
+              <input class="form-input" id="f-precio" type="number" placeholder="85000" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">Stock</label>
+              <input class="form-input" id="f-stock" type="number" placeholder="10" />
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Descripción</label>
+              <textarea class="form-textarea" id="f-desc" placeholder="Describí el producto..."></textarea>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Marca</label>
+              <input class="form-input" id="f-marca" placeholder="Rip Curl, Rusty, FCS…" />
+            </div>
+            <div class="form-group">
+              <label class="form-label">¿Destacado?</label>
+              <select class="form-select" id="f-destacado">
+                <option value="false">No</option>
+                <option value="true">Sí</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn-primary" onclick="onSubmitProducto()">Enviar → POST /api/productos</button>
+            <button class="btn-secondary" onclick="clearForm()">Limpiar</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GET /api/productos (tabla) -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="endpoint-badge badge-get">GET</span>
+          <span class="endpoint-path">/api/productos</span>
+          <span class="panel-title">Lista de productos</span>
+          <button class="btn-secondary btn-small" style="margin-left:1rem" onclick="renderAdminTable()">↻ Refrescar</button>
+        </div>
+        <div class="panel-body" style="padding:1rem">
+          <div id="admin-table-container">
+            <p style="font-size:.8rem;color:rgba(255,255,255,.3);text-align:center;padding:1.5rem">
+              Cargando productos…
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- DELETE /api/productos/:id -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="endpoint-badge badge-del">DELETE</span>
+          <span class="endpoint-path">/api/productos/:id</span>
+          <span class="panel-title">Eliminar por ID</span>
+        </div>
+        <div class="panel-body">
+          <p style="font-size:.82rem;color:rgba(255,255,255,.45);margin-bottom:1rem">
+            También podés usar el botón <strong>Eliminar</strong> en la tabla de arriba.
+          </p>
+          <div style="display:flex;gap:.75rem;align-items:center">
+            <input class="form-input" id="delete-id" placeholder="ID completo del producto" style="max-width:320px"/>
+            <button class="btn-primary"
+              style="background:rgba(224,68,68,.3);border:1px solid rgba(224,68,68,.4)"
+              onclick="onEliminarProducto(document.getElementById('delete-id').value.trim());document.getElementById('delete-id').value=''">
+              Eliminar
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- GET /api/categorias -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="endpoint-badge badge-get">GET</span>
+          <span class="endpoint-path">/api/categorias</span>
+          <span class="panel-title">Categorías disponibles</span>
+          <button class="btn-secondary btn-small" style="margin-left:1rem" onclick="loadCategorias()">↻ Consultar</button>
+        </div>
+        <div class="panel-body" style="padding:1rem">
+          <div id="cats-container" style="display:flex;gap:1rem;flex-wrap:wrap">
+            <p style="font-size:.8rem;color:rgba(255,255,255,.3)">Hacé click en "Consultar".</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- MIDDLEWARE LOG -->
+      <div class="panel">
+        <div class="panel-header">
+          <span class="endpoint-badge" style="background:rgba(150,100,255,.15);color:#c3a6ff;border:1px solid rgba(150,100,255,.25)">MW</span>
+          <span class="endpoint-path">logger · bodyParser · validator · authAdmin</span>
+          <span class="panel-title">Request log (cliente)</span>
+        </div>
+        <div class="panel-body" style="padding:1rem">
+          <div style="display:flex;gap:1rem;font-size:.7rem;font-family:'Space Mono',monospace;margin-bottom:.75rem;flex-wrap:wrap">
+            <span style="color:#4caf87">● logger</span>
+            <span style="color:#7dc3f5">● bodyParser</span>
+            <span style="color:#f4c842">● validateProducto</span>
+            <span style="color:#c3a6ff">● authAdmin (x-api-key)</span>
+          </div>
+          <div class="log-box" id="mw-log">
+            <div class="log-line">[server] La Surferia API lista en puerto 3000</div>
+            <div class="log-line">[router] GET    /api/productos       → productosController.getAll</div>
+            <div class="log-line">[router] GET    /api/productos/:id   → productosController.getById</div>
+            <div class="log-line">[router] POST   /api/productos       → authAdmin → validateProducto → productosController.create</div>
+            <div class="log-line">[router] PUT    /api/productos/:id   → authAdmin → validateProducto → productosController.update</div>
+            <div class="log-line">[router] DELETE /api/productos/:id   → authAdmin → productosController.remove</div>
+            <div class="log-line">[router] GET    /api/categorias      → categoriasController.getAll</div>
+            <div class="log-line">[router] GET    /api/carrito         → carritoController.getCarrito</div>
+            <div class="log-line">[router] POST   /api/carrito         → carritoController.agregarItem</div>
+            <div class="log-line">[router] DELETE /api/carrito/:id     → carritoController.quitarItem</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============ FOOTER ============ -->
+<footer>
+  <div class="footer-inner">
+    <span class="footer-brand">🌊 La Surferia</span>
+    <span class="footer-note">Express · REST API · Node.js · Aloha 🤙</span>
+  </div>
+</footer>
+
+<script src="/js/api.js"></script>
+<script src="/js/app.js"></script>
+<script>
+  // Cargar categorías en el panel admin
+  async function loadCategorias() {
+    const resp = await fetchCategorias();
+    const container = document.getElementById('cats-container');
+    if (!resp.ok) { container.innerHTML = '<p style="color:#f48080">Error al cargar</p>'; return; }
+    container.innerHTML = resp.data.map(c => `
+      <div style="background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:.8rem 1.2rem;text-align:center;min-width:130px">
+        <div style="font-size:1.6rem;margin-bottom:.3rem">${c.emoji}</div>
+        <div style="font-size:.82rem;margin-bottom:.25rem">${c.nombre}</div>
+        <div style="font-family:'Space Mono',monospace;font-size:.65rem;color:var(--sand)">${c.cantidad} productos</div>
+      </div>`).join('');
+    addLog(`[GET] /api/categorias → 200 OK — ${resp.data.length} categorías`, 'ok');
+  }
+</script>
+
+</body>
+</html>
